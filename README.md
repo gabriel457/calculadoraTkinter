@@ -87,6 +87,8 @@ Substitua `URL_DO_SEU_REPOSITORIO` pelo endereço real do repositório.
 cd calculadora-tkinter
 ```
 
+![Interface da Calculadora Tkinter](assets/calculadoraTkinterPrint.png)
+
 ### 3. Execute a calculadora
 
 **No Windows:**
