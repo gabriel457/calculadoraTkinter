@@ -2,7 +2,7 @@ import tkinter as tk
 
 janela = tk.Tk()
 janela.title("Calculadora")
-janela.geometry("300x400")
+janela.geometry("300x560")
 
 entrada_texto = tk.StringVar()
 
@@ -22,10 +22,19 @@ def click(valor):
     entrada.icursor(tk.END)
 
 def calcular():
+    expressao = entrada_texto.get()
+
     try:
-        resultado = eval(entrada_texto.get())
+        resultado = eval(expressao)
+
         entrada_texto.set(str(resultado))
-    except:
+
+        lista_historico.insert(
+            tk.END,
+            f"{expressao} = {resultado}"
+        )
+
+    except Exception:
         entrada_texto.set("Erro")
 
 def limpar():
@@ -38,6 +47,9 @@ def apagar_ultimo():
         entrada_texto.set("")
     else:
         entrada_texto.set(texto[:-1])
+
+def limpar_historico():
+    lista_historico.delete(0, tk.END)
 
 def tratar_tecla(evento):
     tecla = evento.keysym
@@ -114,8 +126,6 @@ btn_apagar = tk.Button(
 )
 btn_apagar.pack(side="left", padx=5)
 
-btn_limpar.pack(pady=10)
-
 entrada.bind("<Key>", tratar_tecla)
 
 janela.bind_all("<Key>", tratar_tecla)
@@ -126,5 +136,33 @@ janela.bind_all(
 )
 
 entrada.focus_set()
+
+frame_historico = tk.LabelFrame(
+    janela,
+    text="Histórico",
+    padx=5,
+    pady=5
+)
+frame_historico.pack(
+    fill="both",
+    expand=True,
+    padx=10,
+    pady=5
+)
+
+lista_historico = tk.Listbox(
+    frame_historico,
+    height=3,
+    font=("Arial", 11)
+)
+
+lista_historico.pack(fill="both", expand=True)
+btn_limpar_historico = tk.Button(
+    frame_historico,
+    text="Limpar histórico",
+    command=limpar_historico
+)
+
+btn_limpar_historico.pack(pady=5)
 
 janela.mainloop()
