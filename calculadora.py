@@ -1,4 +1,6 @@
 import tkinter as tk
+import ast
+import operator
 
 janela = tk.Tk()
 janela.title("Calculadora")
@@ -17,15 +19,67 @@ entrada = tk.Entry(
 
 entrada.pack(fill="both", ipadx=8, ipady=8, padx=10)
 
+OPERACOES_BINARIAS = {
+    ast.Add: operator.add,
+    ast.Sub: operator.sub,
+    ast.Mult: operator.mul,
+    ast.Div: operator.truediv
+}
+
+OPERACOES_UNARIAS = {
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg
+}
+
+resultado_exibido = False
+
+def avaliar_no(no):
+    if isinstance(no, ast.Constant) and type(no.value) in (int, float):
+        return no.value
+
+    if isinstance(no, ast.BinOp) and type(no.op) in OPERACOES_BINARIAS:
+        esquerda = avaliar_no(no.left)
+        direita = avaliar_no(no.right)
+
+        operacao = OPERACOES_BINARIAS[type(no.op)]
+        return operacao(esquerda, direita)
+
+    if isinstance(no, ast.UnaryOp) and type(no.op) in OPERACOES_UNARIAS:
+        valor = avaliar_no(no.operand)
+
+        operacao = OPERACOES_UNARIAS[type(no.op)]
+        return operacao(valor)
+
+    raise ValueError("Expressão matemática não permitida")
+
+
+def avaliar_expressao(expressao):
+    arvore = ast.parse(expressao, mode="eval")
+    return avaliar_no(arvore.body)
+
 def click(valor):
+    global resultado_exibido
+
+    if entrada_texto.get() == "Erro":
+        entrada_texto.set("")
+        resultado_exibido = False
+
+    if resultado_exibido:
+        if valor not in ("+", "-", "*", "/"):
+            entrada_texto.set("")
+
+        resultado_exibido = False
+
     entrada_texto.set(entrada_texto.get() + str(valor))
     entrada.icursor(tk.END)
 
 def calcular():
+    global resultado_exibido
     expressao = entrada_texto.get()
 
     try:
-        resultado = eval(expressao)
+        resultado = avaliar_expressao(expressao)
+        resultado_exibido = True
 
         entrada_texto.set(str(resultado))
 
@@ -36,17 +90,27 @@ def calcular():
 
     except Exception:
         entrada_texto.set("Erro")
+        resultado_exibido = False
 
 def limpar():
+    global resultado_exibido
+
+    resultado_exibido = False
     entrada_texto.set("")
+    entrada.icursor(tk.END)
 
 def apagar_ultimo():
+    global resultado_exibido
+
+    resultado_exibido = False
     texto = entrada_texto.get()
 
     if texto == "Erro":
         entrada_texto.set("")
     else:
         entrada_texto.set(texto[:-1])
+
+    entrada.icursor(tk.END)
 
 def limpar_historico():
     lista_historico.delete(0, tk.END)
