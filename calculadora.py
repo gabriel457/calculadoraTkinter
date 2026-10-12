@@ -19,6 +19,7 @@ entrada.pack(fill="both", ipadx=8, ipady=8, padx=10)
 
 def click(valor):
     entrada_texto.set(entrada_texto.get() + str(valor))
+    entrada.icursor(tk.END)
 
 def calcular():
     try:
@@ -29,6 +30,32 @@ def calcular():
 
 def limpar():
     entrada_texto.set("")
+
+def apagar_ultimo():
+    texto = entrada_texto.get()
+
+    if texto == "Erro":
+        entrada_texto.set("")
+    else:
+        entrada_texto.set(texto[:-1])
+
+def tratar_tecla(evento):
+    tecla = evento.keysym
+    caractere = evento.char
+
+    if caractere and caractere in "0123456789+-*/.":
+        click(caractere)
+
+    elif caractere == "=" or tecla in ("Return", "KP_Enter"):
+        calcular()
+
+    elif tecla == "BackSpace":
+        apagar_ultimo()
+
+    elif tecla == "Escape":
+        limpar()
+
+    return "break"
 
 operadores = [
     ("/", 1, 3),
@@ -64,15 +91,40 @@ for texto, linha, coluna in operadores:
         btn = tk.Button(frame_botoes, text=texto, width=5, height=2, command=lambda op=texto: click(op))
     btn.grid(row=linha, column=coluna, padx=5, pady=5)
 
+frame_acoes = tk.Frame(janela)
+frame_acoes.pack(pady=10)
 
 btn_limpar = tk.Button(
-    janela,
+    frame_acoes,
     text="C",
-    width=20, height=2,
+    width=8,
+    height=2,
     command=limpar,
-    bg="red", fg="white"
+    bg="red",
+    fg="white"
 )
+btn_limpar.pack(side="left", padx=5)
+
+btn_apagar = tk.Button(
+    frame_acoes,
+    text="⌫",
+    width=8,
+    height=2,
+    command=apagar_ultimo
+)
+btn_apagar.pack(side="left", padx=5)
 
 btn_limpar.pack(pady=10)
+
+entrada.bind("<Key>", tratar_tecla)
+
+janela.bind_all("<Key>", tratar_tecla)
+
+janela.bind_all(
+    "<ButtonRelease-1>",
+    lambda evento: entrada.focus_set()
+)
+
+entrada.focus_set()
 
 janela.mainloop()
