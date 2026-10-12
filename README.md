@@ -87,8 +87,6 @@ Substitua `URL_DO_SEU_REPOSITORIO` pelo endereço real do repositório.
 cd calculadora-tkinter
 ```
 
-![Interface da Calculadora Tkinter](assets/calculadoraTkinterPrint.png)
-
 ### 3. Execute a calculadora
 
 **No Windows:**
@@ -108,6 +106,8 @@ python calculadora.py
 ```bash
 python3 calculadora.py
 ```
+
+![Interface da Calculadora Tkinter](assets/calculadoraTkinterPrint.png)
 
 O projeto não exige a instalação de dependências adicionais pelo `pip`. No Linux, entretanto, o pacote do Tkinter pode precisar ser instalado pelo gerenciador de pacotes da distribuição.
 
